@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Chat Playground - OpenAI Vision Standard</title>
+    <title>AI Chat Playground - OpenAI Vision Standard (Paste Only)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>
@@ -112,7 +112,7 @@
             </div>
             <div class="min-w-0">
                 <h1 class="text-sm md:text-base font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent truncate">AI Playground</h1>
-                <p class="text-[10px] md:text-xs text-gray-400 truncate">Thiết kế kịch bản & Giao diện Vision (Lưu Offline)</p>
+                <p class="text-[10px] md:text-xs text-gray-400 truncate">Thiết kế kịch bản & Giao diện Vision (Dán ảnh trực tiếp)</p>
             </div>
         </div>
 
@@ -194,11 +194,11 @@
                         <div class="flex items-center space-x-2.5 min-w-0">
                             <img id="imagePreview" src="" class="h-12 w-12 object-cover rounded-lg border border-gray-700 shrink-0" alt="Preview">
                             <div class="min-w-0">
-                                <p class="text-xs text-gray-200 font-medium truncate">Ảnh đã đính kèm</p>
+                                <p class="text-xs text-gray-200 font-medium truncate">Ảnh đã dán từ Clipboard</p>
                                 <p class="text-[10px] text-gray-500" id="imageSizeLabel">0 KB</p>
                             </div>
                         </div>
-                        <button onclick="clearSelectedImage()" class="p-1 bg-red-950/80 text-red-400 hover:text-red-200 rounded-lg transition-colors border border-red-900/30 shrink-0">
+                        <button onclick="clearSelectedImage()" class="p-1 bg-red-950/80 text-red-400 hover:text-red-200 rounded-lg transition-colors border border-red-900/30 shrink-0" title="Bỏ ảnh đã dán">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
@@ -210,18 +210,19 @@
                                 <span class="w-2 h-2 rounded-full shrink-0" id="apiStatusIndicator"></span>
                                 <span id="activeModelLabel" class="font-medium text-gray-300 truncate">Model: Loading...</span>
                             </div>
-                            <span class="hidden sm:inline text-gray-500">Gõ chữ và nhấn gửi hoặc dán ảnh vào đây</span>
+                            <span class="hidden sm:inline text-gray-500">Chụp ảnh màn hình rồi dán trực tiếp vào đây (Ctrl+V)</span>
                         </div>
 
-                        <!-- Input Textarea & Attachment buttons -->
+                        <!-- Input Textarea & Paste Status Icon -->
                         <div class="flex items-end p-2 relative gap-1.5">
-                            <!-- Attachment Camera Button -->
-                            <button onclick="triggerImageUpload()" class="p-2.5 text-gray-400 hover:text-blue-500 hover:bg-gray-800/60 active:bg-gray-800 transition-colors shrink-0 rounded-xl" title="Đính kèm ảnh">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812-1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            </button>
-                            <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
+                            <!-- Visual Clip Indicator (Indicates that paste vision is enabled) -->
+                            <div class="p-2.5 text-gray-500 shrink-0 select-none cursor-default" title="Tính năng dán ảnh trực tiếp đang bật">
+                                <svg class="w-5 h-5 text-blue-500/80 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                                </svg>
+                            </div>
 
-                            <textarea id="userInput" rows="1" placeholder="Nhập tin nhắn..." 
+                            <textarea id="userInput" rows="1" placeholder="Nhập tin nhắn (hoặc dán trực tiếp ảnh từ Clipboard)..." 
                                 class="flex-1 bg-transparent border-0 outline-none focus:ring-0 text-gray-100 placeholder-gray-500 text-xs md:text-sm px-2 py-2 resize-none max-h-32 min-h-[38px] overflow-y-auto leading-normal"
                                 onkeydown="handleInputKeydown(event)"></textarea>
                             
@@ -344,7 +345,7 @@
     <!-- TOAST NOTIFICATION CONTAINER -->
     <div id="toastContainer" class="fixed bottom-6 right-6 z-[120] flex flex-col space-y-2 pointer-events-none"></div>
 
-    <!-- MAIN APP CONTROLLER SCRIPT (RETAINED ALL ORIGINAL LOGIC + SESSION STORAGE) -->
+    <!-- MAIN APP CONTROLLER SCRIPT -->
     <script>
         // Configure Marked options
         marked.setOptions({
@@ -805,42 +806,37 @@
             okBtn.addEventListener("click", handleOk);
         }
 
-        // ------------------ VISION & IMAGE HANDLING ------------------
-        function triggerImageUpload() {
-            const input = document.getElementById("imageInput");
-            if (input) input.click();
-        }
-
-        function handleImageSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            processAndAttachImage(file);
-        }
-
-        // Handle Paste Events inside Textarea
+        // ------------------ VISION & CLIPBOARD PASTE HANDLING ------------------
+        // Handle Paste Events inside main Textarea (Paste Only Mechanism)
         function handleTextAreaPaste(event) {
             const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+            let foundImage = false;
             for (let index in items) {
                 const item = items[index];
                 if (item.kind === 'file' && item.type.startsWith('image/')) {
                     const blob = item.getAsFile();
-                    processAndAttachImage(blob);
+                    processAndAttachImageFromBlob(blob);
+                    foundImage = true;
                     event.preventDefault();
                 }
             }
+            if (foundImage) {
+                showNotification("Đã nhận diện ảnh dán từ Clipboard!", "success");
+            }
         }
 
-        // Handle Drag & Drop Drop trigger
+        // Handle Drag & Drop fallback (acts like paste drop)
         function handleTextAreaDrop(event) {
             event.preventDefault();
             const files = event.dataTransfer.files;
             if (files && files.length > 0 && files[0].type.startsWith('image/')) {
-                processAndAttachImage(files[0]);
+                processAndAttachImageFromBlob(files[0]);
+                showNotification("Đã dán ảnh qua kéo thả!", "success");
             }
         }
 
         // Process File blob into Base64 securely
-        function processAndAttachImage(file) {
+        function processAndAttachImageFromBlob(file) {
             if (file.size > 8 * 1024 * 1024) {
                 showNotification("Kích thước ảnh quá lớn (Hỗ trợ tối đa 8MB).", "error");
                 return;
@@ -867,9 +863,7 @@
         function clearSelectedImage() {
             selectedBase64Image = null;
             const container = document.getElementById("imagePreviewContainer");
-            const fileInput = document.getElementById("imageInput");
             if (container) container.classList.add("hidden");
-            if (fileInput) fileInput.value = "";
         }
 
         // ------------------ CONFIGURATION MODAL CONTROLS ------------------
@@ -943,25 +937,27 @@
                     <div class="space-y-2 md:space-y-3">
                         <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">AI Chat Playground</h2>
                         <p class="text-gray-400 text-xs md:text-sm max-w-lg mx-auto px-4">
-                            Công cụ xây dựng và kiểm thử kịch bản hội thoại chuẩn OpenAI. Hỗ trợ hiển thị Markdown tinh tế, biên tập kịch bản linh hoạt và xử lý Vision đa phương tiện mượt mà.
+                            Công cụ xây dựng và kiểm thử kịch bản hội thoại chuẩn OpenAI. Hỗ trợ hiển thị Markdown tinh tế, biên tập kịch bản linh hoạt và dán (Paste) ảnh trực tiếp cực kỳ mượt mà.
                         </p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 w-full text-left max-w-xl px-4">
                         <div class="p-4 bg-gray-900/40 border border-gray-800 rounded-xl hover:border-gray-700/80 transition-all">
                             <div class="flex items-center space-x-2 text-blue-400 font-semibold text-xs md:text-sm mb-1.5">
-                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812-1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
-                                <span>Vision Đa Phương Tiện</span>
+                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                                </svg>
+                                <span>Paste Để Xem Ảnh (Vision)</span>
                             </div>
-                            <p class="text-[11px] md:text-xs text-gray-400 leading-relaxed">Đính kèm, kéo thả hoặc dán ảnh clipboard trực tiếp để kiểm thử khả năng nhận dạng thị giác của các mô hình đa phương thức.</p>
+                            <p class="text-[11px] md:text-xs text-gray-400 leading-relaxed">Chỉ cần sao chép ảnh từ bất kỳ đâu (hoặc chụp ảnh màn hình) rồi nhấn <strong>Ctrl + V</strong> trực tiếp vào ô nhập để đính kèm lập tức.</p>
                         </div>
 
                         <div class="p-4 bg-gray-900/40 border border-gray-800 rounded-xl hover:border-gray-700/80 transition-all">
                             <div class="flex items-center space-x-2 text-purple-400 font-semibold text-xs md:text-sm mb-1.5">
                                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                <span>Chỉnh Sửa Linh Hoạt</span>
+                                <span>Biên Tập Toàn Diện</span>
                             </div>
-                            <p class="text-[11px] md:text-xs text-gray-400 leading-relaxed">Thay đổi câu chữ, chèn mới hoặc loại bỏ bất kì tin nhắn cũ nào để thiết lập dòng tư duy tùy biến tiếp theo của mô hình AI.</p>
+                            <p class="text-[11px] md:text-xs text-gray-400 leading-relaxed">Thay đổi nội dung, dán thêm ảnh mới khi đang sửa, hoặc xóa dòng tin cũ bất kỳ để tinh chỉnh dòng tư duy chuẩn xác của mô hình AI.</p>
                         </div>
                     </div>
 
@@ -1074,42 +1070,49 @@
                     textarea.value = msg.content;
                     bodyContainer.appendChild(textarea);
 
-                    // Add Vision Edit attachment controls inside Edit Panel
-                    const editVisionPanel = document.createElement("div");
-                    editVisionPanel.className = "flex items-center space-x-2 pt-1 pb-2 flex-wrap gap-2";
-
-                    const filePickerBtn = document.createElement("button");
-                    filePickerBtn.className = "px-2.5 py-1 bg-gray-800 hover:bg-gray-700 text-[10px] text-gray-300 rounded border border-gray-700 flex items-center space-x-1.5 font-medium";
-                    filePickerBtn.innerHTML = `
-                        <svg class="w-3.5 h-3.5 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812-1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
-                        <span>${msg.image ? 'Đổi ảnh' : 'Đính kèm ảnh'}</span>
-                    `;
-                    
-                    const hiddenPicker = document.createElement("input");
-                    hiddenPicker.type = "file";
-                    hiddenPicker.accept = "image/*";
-                    hiddenPicker.className = "hidden";
-                    hiddenPicker.onchange = (e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function (evt) {
-                                chatMessages[index].image = evt.target.result;
-                                saveSessionsToLocalStorage();
-                                renderMessages();
-                            };
-                            reader.readAsDataURL(file);
+                    // Allow pasting images inside the edit-textarea as well!
+                    textarea.addEventListener("paste", (e) => {
+                        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+                        let foundImageInEdit = false;
+                        for (let key in items) {
+                            const item = items[key];
+                            if (item.kind === 'file' && item.type.startsWith('image/')) {
+                                const blob = item.getAsFile();
+                                if (blob.size > 8 * 1024 * 1024) {
+                                    showNotification("Kích thước ảnh quá lớn (Tối đa 8MB).", "error");
+                                    return;
+                                }
+                                const reader = new FileReader();
+                                reader.onload = function (evt) {
+                                    chatMessages[index].image = evt.target.result;
+                                    saveSessionsToLocalStorage();
+                                    renderMessages();
+                                };
+                                reader.readAsDataURL(blob);
+                                foundImageInEdit = true;
+                                e.preventDefault();
+                            }
                         }
-                    };
+                        if (foundImageInEdit) {
+                            showNotification("Đã dán và thay thế ảnh cho tin nhắn này!", "success");
+                        }
+                    });
 
-                    filePickerBtn.onclick = () => hiddenPicker.click();
+                    // Add Vision Edit attachment status inside Edit Panel
+                    const editVisionPanel = document.createElement("div");
+                    editVisionPanel.className = "flex items-center justify-between pt-1 pb-2 text-[10px] text-gray-400 gap-2";
 
-                    editVisionPanel.appendChild(filePickerBtn);
-                    editVisionPanel.appendChild(hiddenPicker);
+                    const hintSpan = document.createElement("span");
+                    hintSpan.className = "flex items-center gap-1 text-blue-400";
+                    hintSpan.innerHTML = `
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>Mẹo: Bạn có thể nhấn Ctrl+V trực tiếp vào ô soạn thảo này để cập nhật ảnh mới.</span>
+                    `;
+                    editVisionPanel.appendChild(hintSpan);
 
                     if (msg.image) {
                         const removeImgBtn = document.createElement("button");
-                        removeImgBtn.className = "px-2.5 py-1 bg-red-950/60 hover:bg-red-950 text-[10px] text-red-400 rounded border border-red-900/30 flex items-center space-x-1 font-medium";
+                        removeImgBtn.className = "px-2 py-1 bg-red-950/60 hover:bg-red-950 text-[10px] text-red-400 rounded border border-red-900/30 flex items-center space-x-1 font-medium shrink-0 ml-auto";
                         removeImgBtn.innerHTML = `
                             <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                             <span>Xóa ảnh</span>
@@ -1118,6 +1121,7 @@
                             chatMessages[index].image = null;
                             saveSessionsToLocalStorage();
                             renderMessages();
+                            showNotification("Đã xóa ảnh đính kèm.", "info");
                         };
                         editVisionPanel.appendChild(removeImgBtn);
                     }
@@ -1137,7 +1141,7 @@
                     const imgEl = document.createElement("img");
                     imgEl.src = msg.image;
                     imgEl.className = "max-h-48 md:max-h-60 w-auto object-contain cursor-pointer rounded-xl hover:scale-[1.01] transition-transform duration-200";
-                    imgEl.alt = "Attached Image";
+                    imgEl.alt = "Pasted Visual Content";
                     // Expand/Zoom functionality
                     imgEl.onclick = () => {
                         window.open().document.write(`<img src="${msg.image}" style="max-width:100%; height:auto; margin:auto; display:block;" />`);
@@ -1431,7 +1435,7 @@
                     sendBtn.classList.remove("hidden");
                     loadingBtn.classList.add("hidden");
                     userInput.disabled = false;
-                    userInput.placeholder = "Nhập tin nhắn...";
+                    userInput.placeholder = "Nhập tin nhắn (hoặc dán trực tiếp ảnh từ Clipboard)...";
                     userInput.focus();
                 }
             }
